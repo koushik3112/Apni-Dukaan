@@ -1,0 +1,877 @@
+/* ==========================================
+   CONFIG & THEME VARIABLES
+   ========================================== */
+:root {
+  /* Default Devotional/Saffron theme values (Dynamically modified by JS) */
+  --theme-accent-color: #f97316;
+  --theme-glow-color: rgba(249, 115, 22, 0.35);
+  
+  /* Glassmorphism/Translucency */
+  --glass-bg: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* ==========================================
+   GLOBAL STYLES & RESET
+   ========================================== */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+#main {
+  /* Background PC image with overlay */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url('background_pc.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2.5rem 2rem;
+  position: relative;
+  transition: background-image 0.5s ease-in-out;
+}
+
+/* Responsive Background for Mobile */
+@media (max-width: 768px) {
+  #main {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('background_mobile.png');
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* ==========================================
+   TOP HEADER NAVBAR
+   ========================================== */
+#main header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+#wish, #time {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  padding: 0.55rem 1.6rem;
+  border-radius: 30px;
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+}
+
+#time {
+  font-weight: 700;
+  font-size: 1.45rem;
+}
+
+/* Auto-Schedule status badge */
+.scheduler-badge {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  padding: 0.5rem 1.2rem;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 550;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.scheduler-badge:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.scheduler-badge .dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #22c55e;
+  animation: pulse 1.5s infinite;
+}
+
+.scheduler-badge.manual .dot {
+  background: #94a3b8;
+  box-shadow: none;
+  animation: none;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.6; }
+}
+
+/* ==========================================
+   DEVOTIONAL FLICKERING DIYA WIDGET
+   ========================================== */
+.diya-outer-container {
+  position: absolute;
+  top: 18vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transform: scale(0.7) translateY(-30px);
+  transition: opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.diya-outer-container.visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.diya-svg {
+  width: 85px;
+  height: 85px;
+  filter: drop-shadow(0 0 15px rgba(251, 146, 60, 0.85));
+}
+
+.diya-flame {
+  transform-origin: 50% 90%;
+  animation: flameFlicker 0.15s infinite alternate ease-in-out;
+  fill: url(#flameGradient);
+}
+
+.diya-flame-glow {
+  transform-origin: 50% 90%;
+  animation: flameGlow 1.2s infinite alternate ease-in-out;
+  fill: rgba(251, 146, 60, 0.35);
+  filter: blur(4px);
+}
+
+.diya-base {
+  fill: url(#diyaBaseGradient);
+}
+
+@keyframes flameFlicker {
+  0% { transform: scaleX(0.93) rotate(-1.5deg); }
+  100% { transform: scaleY(1.05) scaleX(1.03) rotate(1deg); }
+}
+
+@keyframes flameGlow {
+  0% { opacity: 0.2; transform: scale(0.9); }
+  100% { opacity: 0.5; transform: scale(1.15); }
+}
+
+/* ==========================================
+   HORIZONTAL BAR MUSIC PLAYER 
+   ========================================== */
+#musicplayer {
+  width: 100%;
+  max-width: 60%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.bar-player {
+  width: 100%;
+  background: rgba(18, 18, 18, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 60px;
+  padding: 0.4rem 0.8rem 0.4rem 0.4rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 35px -5px var(--theme-glow-color);
+  gap: 0.6rem;
+  transition: box-shadow 0.6s ease, border-color 0.6s ease;
+}
+
+/* 1. Circular Album Cover Art */
+.art-container {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #111;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cd-center {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #121212;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+  z-index: 5;
+}
+
+.album-art-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: rotateArt 18s linear infinite;
+  animation-play-state: paused;
+}
+
+.album-art-image.playing {
+  animation-play-state: running;
+}
+
+.album-art-fallback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(45deg, #1e1b4b, #311042);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.album-art-fallback.visible {
+  opacity: 1;
+}
+
+.album-art-fallback i {
+  color: var(--theme-accent-color);
+  font-size: 1.4rem;
+}
+
+@keyframes rotateArt {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 2. Track Title & Seekbar */
+.title-progress-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  max-width: 320px;
+  gap: 0.4rem;
+}
+
+.track-title-wrapper {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.track-title {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.2px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* Custom Click-and-Drag Seekbar */
+.custom-seekbar-container {
+  width: 100%;
+  height: 20px; /* click target area */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.custom-seekbar-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+  position: relative;
+}
+
+.custom-seekbar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: rgba(255, 255, 255, 0.35); /* Soft white progress fill, just like image */
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.custom-seekbar-handle {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  transform: translate(-50%, -55%);
+  font-size: 1.2rem; /* Emoji size */
+  pointer-events: none;
+  line-height: 1;
+  user-select: none;
+}
+
+/* 3. Artist & Time Duration */
+.artist-time-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 110px;
+  gap: 0.15rem;
+}
+
+.track-artist {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.time-display {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: monospace;
+}
+
+/* 4. Mode Selector Emojis */
+.mode-selectors {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.3rem 0.5rem;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mode-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.3rem 0.4rem;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mode-btn:hover {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6));
+}
+
+.mode-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  filter: drop-shadow(0 0 8px var(--theme-accent-color));
+  transform: scale(1.1);
+}
+
+/* 5. Media Controls */
+.media-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.control-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 1rem;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  transform: scale(1.08);
+}
+
+.control-btn:active {
+  transform: scale(0.95);
+}
+
+.control-btn.active {
+  color: var(--theme-accent-color);
+  filter: drop-shadow(0 0 4px var(--theme-glow-color));
+}
+
+.play-pause-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #121212;
+  border: none;
+  font-size: 1.15rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.45);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.play-pause-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.7), 0 0 10px var(--theme-glow-color);
+}
+
+.play-pause-btn:active {
+  transform: scale(0.93);
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN (MOBILE STACK LAYOUT)
+   ========================================== */
+@media (max-width: 768px) {
+  #musicplayer {
+    max-width: 420px;
+    padding: 0 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .bar-player {
+    flex-direction: column;
+    border-radius: 30px;
+    padding: 1.5rem 1.2rem;
+    gap: 1.2rem;
+    align-items: center;
+  }
+
+  .art-container {
+    width: 75px;
+    height: 75px;
+  }
+
+  .title-progress-container {
+    max-width: 100%;
+    width: 100%;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .track-title {
+    font-size: 1.05rem;
+    text-align: center;
+  }
+
+  .artist-time-container {
+    align-items: center;
+    min-width: unset;
+    gap: 0.3rem;
+  }
+
+  .track-artist {
+    font-size: 0.95rem;
+  }
+
+  .time-display {
+    font-size: 0.85rem;
+  }
+
+  .mode-selectors {
+    width: 100%;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 0.4rem;
+  }
+
+  .media-controls {
+    width: 100%;
+    justify-content: center;
+    gap: 1.1rem;
+  }
+  
+  .control-btn {
+    font-size: 1.15rem;
+    width: 40px;
+    height: 40px;
+  }
+
+  .play-pause-btn {
+    width: 54px;
+    height: 54px;
+    font-size: 1.3rem;
+  }
+}
+
+
+/* YouTube playback engine host: YouTube requires an embedded player of at least 200x200.
+   Keep it rendered on-screen (opacity 0.001, z-index -1) so browser autoplay/audio rules do not throttle it. */
+#youtube-player {
+  position: fixed;
+  width: 200px;
+  height: 200px;
+  bottom: 0;
+  right: 0;
+  opacity: 0.001;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: -1;
+}
+
+/* ==========================================
+   GLASSMORPHIC PLAYLIST DRAWER
+   ========================================== */
+.playlist-drawer {
+  position: fixed;
+  bottom: 95px;
+  right: 2rem;
+  width: 400px;
+  max-width: calc(100vw - 2rem);
+  max-height: 540px;
+  background: rgba(18, 18, 18, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 25px var(--theme-glow-color);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.playlist-drawer.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.playlist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.playlist-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.playlist-title i {
+  color: var(--theme-accent-color);
+}
+
+.playlist-close-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.playlist-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.playlist-body {
+  display: flex;
+  flex-direction: column;
+  padding: 0.8rem 1rem;
+  gap: 1rem;
+  overflow-y: auto;
+  max-height: 480px;
+}
+
+/* Custom Scrollbar for Playlist Body */
+.playlist-body::-webkit-scrollbar {
+  width: 6px;
+}
+.playlist-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+.playlist-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+}
+.playlist-body::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-accent-color);
+}
+
+.section-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.section-label i {
+  color: var(--theme-accent-color);
+  font-size: 0.85rem;
+}
+
+/* 1. Repeat Mode Buttons */
+.repeat-mode-buttons {
+  display: flex;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.3rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.repeat-mode-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.76rem;
+  font-weight: 500;
+  padding: 0.45rem 0.4rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  transition: all 0.2s ease;
+}
+
+.repeat-mode-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.repeat-mode-btn.active {
+  background: var(--theme-accent-color);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 0 10px var(--theme-glow-color);
+}
+
+/* 2. Playlist Selection Categories */
+.playlist-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.playlist-cat-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 0.5rem 0.85rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.playlist-cat-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.playlist-cat-btn.active {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: var(--theme-accent-color);
+  color: var(--theme-accent-color);
+  font-weight: 600;
+  box-shadow: 0 0 12px var(--theme-glow-color);
+}
+
+/* 3. Tracks List Container */
+.playlist-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+/* Custom Scrollbar for Playlist Items */
+.playlist-items::-webkit-scrollbar {
+  width: 6px;
+}
+.playlist-items::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+.playlist-items::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+}
+.playlist-items::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-accent-color);
+}
+
+.playlist-loading, .playlist-error {
+  padding: 1.5rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.5rem 0.6rem;
+  border-radius: 12px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.playlist-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(3px);
+}
+
+.playlist-item.active {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--theme-accent-color);
+  box-shadow: 0 0 10px var(--theme-glow-color);
+}
+
+.playlist-item-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #222;
+}
+
+.playlist-item-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.playlist-item-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlist-item.active .playlist-item-title {
+  color: var(--theme-accent-color);
+  font-weight: 600;
+}
+
+.playlist-item-index {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.playlist-item-playing-icon {
+  color: var(--theme-accent-color);
+  font-size: 0.85rem;
+  margin-left: auto;
+  padding-right: 0.3rem;
+  display: none;
+}
+
+.playlist-item.active .playlist-item-playing-icon {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .playlist-drawer {
+    right: 50%;
+    transform: translateX(50%) translateY(20px) scale(0.95);
+    bottom: 120px;
+    width: 90vw;
+    max-height: 360px;
+  }
+  .playlist-drawer.open {
+    transform: translateX(50%) translateY(0) scale(1);
+  }
+}

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apni Dukaan</title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;700;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Hidden YouTube IFrame Player -->
+  <div id="youtube-player" aria-hidden="true"></div>
+
+  <div id="main">
+    
+    <!-- Top Header Navbar -->
+    <header>
+      <span id="wish" class="wish">Good Morning</span>
+      
+      <!-- Clickable Auto Schedule Badge Toggle -->
+      <div class="scheduler-badge" id="scheduler-badge" title="Click to toggle Auto Mode">
+        <span class="dot"></span>
+        <span id="scheduler-badge-text">Auto Mode: ON</span>
+      </div>
+
+      <span id="time" class="time">
+        <span id="hrs">12:45</span>
+        <span id="am-pm">PM</span>
+      </span>
+    </header>
+
+    <!-- Diya Devotional Icon (Visible during Devotional Mode) -->
+    <div class="diya-outer-container" id="diya-widget">
+      <svg class="diya-svg" viewBox="0 0 100 100">
+        <defs>
+          <linearGradient id="diyaBaseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#b45309" />
+            <stop offset="100%" stop-color="#78350f" />
+          </linearGradient>
+          <linearGradient id="flameGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stop-color="#ea580c" />
+            <stop offset="50%" stop-color="#f97316" />
+            <stop offset="85%" stop-color="#facc15" />
+            <stop offset="100%" stop-color="#fffbeb" />
+          </linearGradient>
+        </defs>
+        <ellipse class="diya-flame-glow" cx="50" cy="35" rx="14" ry="24" />
+        <path class="diya-flame" d="M50 15 C 55 30, 62 38, 62 48 C 62 56, 38 56, 38 48 C 38 38, 45 30, 50 15 Z" />
+        <path class="diya-base" d="M15 60 C 15 80, 85 80, 85 60 C 85 58, 80 55, 75 58 C 65 62, 35 62, 25 58 C 20 55, 15 58, 15 60 Z" />
+        <line x1="50" y1="52" x2="50" y2="60" stroke="#451a03" stroke-width="3" stroke-linecap="round" />
+      </svg>
+    </div>
+
+    <!-- Bottom Center Horizontal Pill Player (Image Inspired) -->
+    <div id="musicplayer">
+      <div class="bar-player">
+        
+        <!-- 1. Circular Album Cover Art -->
+        <div class="art-container">
+          <div class="cd-center"></div>
+          <img src="" alt="Cover Art" id="album-art" class="album-art-image">
+          <div class="album-art-fallback" id="album-art-fallback">
+            <i class="fa-solid fa-music"></i>
+          </div>
+        </div>
+
+        <!-- 2. Track Title & Seekbar -->
+        <div class="title-progress-container">
+          <div class="track-title-wrapper">
+            <span id="track-title" class="track-title">Loading...</span>
+          </div>
+          <div class="custom-seekbar-container" id="seekbar-container" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+            <div class="custom-seekbar-track">
+              <div class="custom-seekbar-fill" id="seekbar-fill"></div>
+              <div class="custom-seekbar-handle" id="seekbar-handle">☕</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Artist & Time Duration -->
+        <div class="artist-time-container">
+          <span id="track-artist" class="track-artist">Please wait</span>
+          <span class="time-display">
+            <span id="current-time">0:00</span> / <span id="track-duration">0:00</span>
+          </span>
+        </div>
+
+        <!-- 4. Media Controls -->
+        <div class="media-controls">
+          <button class="control-btn" id="ctrl-shuffle" title="Shuffle Mode">
+            <i class="fa-solid fa-shuffle"></i>
+          </button>
+          <button class="control-btn" id="ctrl-prev" title="Previous Track">
+            <i class="fa-solid fa-backward-step"></i>
+          </button>
+          <button class="play-pause-btn" id="ctrl-play-pause" title="Play/Pause">
+            <i class="fa-solid fa-play" id="play-icon"></i>
+          </button>
+          <button class="control-btn" id="ctrl-next" title="Next Track">
+            <i class="fa-solid fa-forward-step"></i>
+          </button>
+          <button class="control-btn" id="ctrl-repeat" title="Repeat Track / Playlist">
+            <i class="fa-solid fa-list-ul"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Interactive Glassmorphic Repeat Track / Playlist Manager -->
+    <div id="playlist-drawer" class="playlist-drawer" aria-hidden="true">
+      <div class="playlist-header">
+        <div class="playlist-title">
+          <i class="fa-solid fa-list-ul"></i>
+          <span>Repeat Track / Playlist</span>
+        </div>
+        <button id="playlist-close-btn" class="playlist-close-btn" title="Close Manager">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="playlist-body">
+        <!-- 1. Repeat Mode Selector -->
+        <div class="repeat-section">
+          <span class="section-label"><i class="fa-solid fa-rotate"></i> Playback Loop Mode</span>
+          <div class="repeat-mode-buttons">
+            <button class="repeat-mode-btn" id="btn-repeat-none" data-mode="none" title="Normal Playback">
+              <i class="fa-solid fa-arrow-right-long"></i> No Repeat
+            </button>
+            <button class="repeat-mode-btn" id="btn-repeat-track" data-mode="track" title="Repeat Current Song Continuously">
+              <i class="fa-solid fa-repeat"></i> Repeat Track
+            </button>
+            <button class="repeat-mode-btn active" id="btn-repeat-playlist" data-mode="playlist" title="Loop Entire Playlist">
+              <i class="fa-solid fa-rotate-right"></i> Repeat Playlist
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Playlist Selection Section -->
+        <div class="playlist-select-section">
+          <span class="section-label"><i class="fa-solid fa-layer-group"></i> My Playlists</span>
+          <div id="playlist-categories" class="playlist-categories">
+            <!-- Playlist category buttons dynamically rendered from config -->
+          </div>
+        </div>
+
+        <!-- 3. Current Songs List -->
+        <div class="playlist-songs-section">
+          <span class="section-label"><i class="fa-solid fa-music"></i> Playlist Songs</span>
+          <div id="playlist-items" class="playlist-items">
+            <div class="playlist-loading">
+              <i class="fa-solid fa-spinner fa-spin"></i> Loading playlist songs...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JS Logic Script -->
+  <script src="app.js"></script>
+</body>
+</html>
